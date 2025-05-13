@@ -55,10 +55,10 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(data => {
       // Display result
       resultContainer.style.display = 'block';
-      // Formatar o resultado com vírgula como separador decimal e 3 casas decimais
+      // Formatar o resultado com vírgula como separador decimal e 2 casas decimais
       const formattedResult = Number(data.result).toLocaleString('pt-BR', {
-        minimumFractionDigits: 3,
-        maximumFractionDigits: 3
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
       });
       resultDisplay.textContent = formattedResult;
       
@@ -102,12 +102,27 @@ document.addEventListener('DOMContentLoaded', function() {
           
           const operation = document.createElement('div');
           operation.className = 'history-operation';
-          // Formatar o resultado com vírgula como separador decimal e 3 casas decimais
-          const formattedResult = Number(item.result).toLocaleString('pt-BR', {
-            minimumFractionDigits: 3,
-            maximumFractionDigits: 3
+          // Formatar os operandos e o resultado com vírgula como separador decimal
+          const formattedFirstOperand = Number(item.firstOperand).toLocaleString('pt-BR', {
+            minimumFractionDigits: 1,
+            maximumFractionDigits: 2
           });
-          operation.textContent = `${item.operation} = ${formattedResult}`;
+          
+          const formattedSecondOperand = Number(item.secondOperand).toLocaleString('pt-BR', {
+            minimumFractionDigits: 1,
+            maximumFractionDigits: 2
+          });
+          
+          // Formatar o resultado com vírgula como separador decimal e 2 casas decimais
+          const formattedResult = Number(item.result).toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          });
+          
+          // Construir a operação formatada
+          const formattedOperation = `${formattedFirstOperand} ${item.operator} ${formattedSecondOperand}`;
+          
+          operation.textContent = `${formattedOperation} = ${formattedResult}`;
           
           const timestamp = document.createElement('div');
           timestamp.className = 'history-timestamp';
