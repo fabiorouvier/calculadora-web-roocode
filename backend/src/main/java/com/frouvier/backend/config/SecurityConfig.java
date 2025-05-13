@@ -29,7 +29,8 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/users/register", "/actuator/health").permitAll()
+                .requestMatchers("/api/users/register").permitAll()
+                .requestMatchers("/actuator/health/**").permitAll() // Permite acesso ao endpoint de health e seus sub-endpoints
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
