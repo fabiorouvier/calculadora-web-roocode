@@ -69,7 +69,7 @@ app.post('/login', async (req, res) => {
       },
       withCredentials: true,
       maxRedirects: 0,
-      validateStatus: status => status >= 200 && status < 400
+      validateStatus: status => status >= 200 && status < 300
     });
     
     // If we get here, login was successful
@@ -84,7 +84,7 @@ app.post('/login', async (req, res) => {
     res.redirect('/calculator');
   } catch (error) {
     console.error('Login error:', error.message);
-    res.render('login', { error: 'Invalid username or password' });
+    res.render('login', { error: 'Usuário ou senha inválidos' });
   }
 });
 
