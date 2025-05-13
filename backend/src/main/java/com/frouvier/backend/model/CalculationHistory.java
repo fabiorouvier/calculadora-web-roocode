@@ -29,6 +29,9 @@ public class CalculationHistory {
     private Double result;
     private LocalDateTime timestamp;
     
+    @Transient
+    private String formattedResult;
+    
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -78,23 +81,32 @@ public class CalculationHistory {
         return result;
     }
     
-    /**
-     * Retorna o resultado formatado com vírgula como separador decimal e 3 casas decimais
-     * @return Resultado formatado
-     */
-    @Transient
-    public String getFormattedResult() {
-        if (result == null) {
-            return null;
-        }
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("pt", "BR"));
-        symbols.setDecimalSeparator(',');
-        DecimalFormat df = new DecimalFormat("#,##0.000", symbols);
-        return df.format(result);
-    }
-    
     public void setResult(Double result) {
         this.result = result;
+        
+        // Atualizar o resultado formatado quando o resultado for alterado
+        if (result != null) {
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("pt", "BR"));
+            symbols.setDecimalSeparator(',');
+            DecimalFormat df = new DecimalFormat("#,##0.000", symbols);
+            this.formattedResult = df.format(result);
+        } else {
+            this.formattedResult = null;
+        }
+    }
+    
+    public String getFormattedResult() {
+        if (formattedResult == null && result != null) {
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("pt", "BR"));
+            symbols.setDecimalSeparator(',');
+            DecimalFormat df = new DecimalFormat("#,##0.000", symbols);
+            return df.format(result);
+        }
+        return formattedResult;
+    }
+    
+    public void setFormattedResult(String formattedResult) {
+        this.formattedResult = formattedResult;
     }
     
     public LocalDateTime getTimestamp() {
