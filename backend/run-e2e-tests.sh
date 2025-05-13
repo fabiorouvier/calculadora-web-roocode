@@ -33,7 +33,7 @@ else
 fi
 
 # Modifica a URL base para apontar para localhost
-sed -i.bak 's|private static final String BASE_URL = "http://100.26.194.86:3000";|private static final String BASE_URL = "http://localhost:3000";|' src/test/java/com/frouvier/backend/e2e/config/WebDriverConfig.java
+sed -i.bak 's|private static final String BASE_URL = "http://44.204.82.30:3000";|private static final String BASE_URL = "http://localhost:3000";|' src/test/java/com/frouvier/backend/e2e/config/WebDriverConfig.java
 
 # Executa os testes
 echo "Executando os testes E2E..."

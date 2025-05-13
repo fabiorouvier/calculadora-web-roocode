@@ -3,7 +3,7 @@
 # Script para executar os testes end-to-end e gerar o relatório HTML
 
 echo "=== INICIANDO EXECUÇÃO DOS TESTES E2E COM EDGE APONTANDO PARA EC2 ==="
-echo "URL: http://100.26.194.86:3000"
+echo "URL: http://44.204.82.30:3000"
 echo "Navegador: Edge"
 
 # Registra o tempo de início
