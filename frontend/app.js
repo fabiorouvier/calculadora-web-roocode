@@ -75,8 +75,8 @@ app.post('/login', async (req, res) => {
       maxRedirects: 0,
       validateStatus: function (status) {
         console.log(`Status da resposta: ${status}`);
-        // Apenas status 2xx são considerados sucesso
-        return status >= 200 && status < 300;
+        // Consideramos 2xx e 302 (redirecionamento após login bem-sucedido) como sucesso
+        return (status >= 200 && status < 300) || status === 302;
       }
     });
     
@@ -102,8 +102,22 @@ app.post('/login', async (req, res) => {
       return res.render('login', { error: 'Usuário ou senha inválidos' });
     }
     
-    // Para outros erros, também mostrar mensagem de erro
-    res.render('login', { error: 'Usuário ou senha inválidos' });
+    // Para outros erros, também mostrar mensagem de erro, exceto 302 (redirecionamento)
+    if (error.response && error.response.status !== 302) {
+      res.render('login', { error: 'Usuário ou senha inválidos' });
+    } else {
+      // Se for 302, é um login bem-sucedido com redirecionamento
+      console.log('Login bem-sucedido com redirecionamento');
+      req.session.user = { username };
+      
+      // Store the JSESSIONID cookie from the backend
+      if (error.response && error.response.headers['set-cookie']) {
+        const cookies = error.response.headers['set-cookie'];
+        req.session.backendCookies = cookies;
+      }
+      
+      res.redirect('/calculator');
+    }
   }
 });
 
