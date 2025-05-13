@@ -4,7 +4,7 @@
 
 # Configurações
 EC2_USER="ubuntu"
-EC2_HOST="100.26.194.86"
+EC2_HOST="44.204.82.30"
 SSH_KEY="$HOME/aws/chave-frouvier.pem"
 REMOTE_DIR="/home/ubuntu/calculadora-web-roocode"
 

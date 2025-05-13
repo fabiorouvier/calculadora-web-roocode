@@ -6,7 +6,7 @@
 export BROWSER=edge
 echo "Configurado para usar Edge para os testes..."
 
-echo "Executando os testes E2E apontando para a EC2 (http://100.26.194.86:3000)..."
+echo "Executando os testes E2E apontando para a EC2 (http://44.204.82.30:3000)..."
 
 # Executa os testes usando o Edge
 ./mvnw test -Dtest=com.frouvier.backend.e2e.CucumberTestRunner

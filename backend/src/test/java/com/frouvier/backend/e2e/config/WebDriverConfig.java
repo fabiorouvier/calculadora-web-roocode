@@ -18,7 +18,7 @@ import java.time.Duration;
  */
 public class WebDriverConfig {
 
-    private static final String BASE_URL = "http://100.26.194.86:3000";
+    private static final String BASE_URL = "http://44.204.82.30:3000";
     private static WebDriver driver;
 
     /**
