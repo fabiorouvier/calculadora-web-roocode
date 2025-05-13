@@ -45,7 +45,7 @@ app.get('/', (req, res) => {
 
 // Login page
 app.get('/login', (req, res) => {
-  res.render('login', { error: null });
+  res.render('login', { error: null, success: null });
 });
 
 // Register page
@@ -71,7 +71,7 @@ app.post('/login', async (req, res) => {
   
   if (!userIsValid) {
     console.log('Login falhou: Credenciais inválidas');
-    return res.render('login', { error: 'Usuário ou senha inválidos' });
+    return res.render('login', { error: 'Usuário ou senha inválidos', success: null });
   }
   
   try {
@@ -107,7 +107,7 @@ app.post('/login', async (req, res) => {
     return res.redirect('/calculator');
   } catch (error) {
     console.error('Erro na requisição:', error.message);
-    return res.render('login', { error: 'Usuário ou senha inválidos' });
+    return res.render('login', { error: 'Usuário ou senha inválidos', success: null });
   }
 });
 
@@ -121,7 +121,7 @@ app.post('/register', async (req, res) => {
       password
     });
     
-    res.redirect('/login');
+    res.render('login', { error: null, success: 'Registro realizado com sucesso! Faça login para continuar.' });
   } catch (error) {
     console.error('Registration error:', error.message);
     res.render('register', { error: 'Registration failed. Username may already exist.' });

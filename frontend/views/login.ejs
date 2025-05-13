@@ -17,6 +17,12 @@
         </div>
       <% } %>
       
+      <% if (success) { %>
+        <div class="success-message">
+          <%= success %>
+        </div>
+      <% } %>
+      
       <form action="/login" method="POST">
         <div class="form-group">
           <label for="username">Usuário:</label>
