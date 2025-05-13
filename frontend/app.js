@@ -59,14 +59,14 @@ app.post('/login', async (req, res) => {
   
   console.log(`Tentativa de login para usuário: ${username}`);
   
+  // Create form data for Spring Security form login
+  const params = new URLSearchParams();
+  params.append('username', username);
+  params.append('password', password);
+  
+  console.log('Enviando requisição para o backend...');
+  
   try {
-    // Create form data for Spring Security form login
-    const params = new URLSearchParams();
-    params.append('username', username);
-    params.append('password', password);
-    
-    console.log('Enviando requisição para o backend...');
-    
     const response = await axios.post(`${BACKEND_URL}/api/login`, params, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -75,49 +75,30 @@ app.post('/login', async (req, res) => {
       maxRedirects: 0,
       validateStatus: function (status) {
         console.log(`Status da resposta: ${status}`);
-        // Consideramos 2xx e 302 (redirecionamento após login bem-sucedido) como sucesso
-        return (status >= 200 && status < 300) || status === 302;
+        // Aceitamos qualquer status para poder verificar o erro
+        return true;
       }
     });
     
-    console.log('Login bem-sucedido!');
-    
-    // If we get here, login was successful
-    req.session.user = { username };
-    
-    // Store the JSESSIONID cookie from the backend
+    // Verificamos se o login foi bem-sucedido verificando os cookies retornados
     if (response.headers['set-cookie']) {
       const cookies = response.headers['set-cookie'];
-      req.session.backendCookies = cookies;
-    }
-    
-    res.redirect('/calculator');
-  } catch (error) {
-    console.error('Login error:', error.message);
-    console.error('Status do erro:', error.response ? error.response.status : 'Sem status');
-    
-    // Se o status for 401 (Unauthorized) ou 403 (Forbidden), é um erro de credenciais
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      console.log('Credenciais inválidas, renderizando página de login com erro');
-      return res.render('login', { error: 'Usuário ou senha inválidos' });
-    }
-    
-    // Para outros erros, também mostrar mensagem de erro, exceto 302 (redirecionamento)
-    if (error.response && error.response.status !== 302) {
-      res.render('login', { error: 'Usuário ou senha inválidos' });
-    } else {
-      // Se for 302, é um login bem-sucedido com redirecionamento
-      console.log('Login bem-sucedido com redirecionamento');
-      req.session.user = { username };
+      const jsessionidCookie = cookies.find(cookie => cookie.includes('JSESSIONID'));
       
-      // Store the JSESSIONID cookie from the backend
-      if (error.response && error.response.headers['set-cookie']) {
-        const cookies = error.response.headers['set-cookie'];
+      if (jsessionidCookie) {
+        console.log('Login bem-sucedido! Cookie de sessão encontrado.');
+        req.session.user = { username };
         req.session.backendCookies = cookies;
+        return res.redirect('/calculator');
       }
-      
-      res.redirect('/calculator');
     }
+    
+    // Se chegou aqui, não encontrou o cookie de sessão
+    console.log('Login falhou: Nenhum cookie de sessão encontrado');
+    return res.render('login', { error: 'Usuário ou senha inválidos' });
+  } catch (error) {
+    console.error('Erro na requisição:', error.message);
+    return res.render('login', { error: 'Usuário ou senha inválidos' });
   }
 });
 
