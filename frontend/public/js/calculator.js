@@ -4,9 +4,34 @@ document.addEventListener('DOMContentLoaded', function() {
   const resultContainer = document.getElementById('resultContainer');
   const resultDisplay = document.getElementById('resultDisplay');
   const historyList = document.getElementById('historyList');
+  const firstOperandInput = document.getElementById('firstOperand');
+  const secondOperandInput = document.getElementById('secondOperand');
+  
+  // Validação para garantir que apenas números sejam aceitos
+  firstOperandInput.addEventListener('input', validateNumberInput);
+  secondOperandInput.addEventListener('input', validateNumberInput);
   
   // Load calculation history when page loads
   loadHistory();
+  
+  // Função para validar entrada de números
+  function validateNumberInput(e) {
+    const input = e.target;
+    const value = input.value;
+    
+    // Permite apenas dígitos e um único ponto decimal
+    // Remove qualquer caractere que não seja dígito ou ponto
+    const sanitizedValue = value.replace(/[^0-9.]/g, '');
+    
+    // Garante que haja apenas um ponto decimal
+    const parts = sanitizedValue.split('.');
+    if (parts.length > 2) {
+      // Se houver mais de um ponto, mantém apenas o primeiro
+      input.value = parts[0] + '.' + parts.slice(1).join('');
+    } else {
+      input.value = sanitizedValue;
+    }
+  }
   
   // Handle form submission
   calculatorForm.addEventListener('submit', function(e) {
