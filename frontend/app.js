@@ -67,30 +67,54 @@ app.post('/login', async (req, res) => {
   console.log('Enviando requisição para o backend...');
   
   try {
-    const response = await axios.post(`${BACKEND_URL}/api/login`, params, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      withCredentials: true,
-      maxRedirects: 0,
-      validateStatus: function (status) {
-        console.log(`Status da resposta: ${status}`);
-        // Aceitamos qualquer status para poder verificar o erro
-        return true;
-      }
-    });
+    // Primeiro, tentamos verificar se o usuário existe
+    let userCheckResponse;
+    try {
+      userCheckResponse = await axios.get(`${BACKEND_URL}/api/calculator/history`, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64')
+        },
+        validateStatus: function (status) {
+          return true; // Aceitamos qualquer status para verificar
+        }
+      });
+    } catch (error) {
+      console.log('Erro ao verificar usuário:', error.message);
+    }
     
-    // Verificamos se o login foi bem-sucedido verificando os cookies retornados
-    if (response.headers['set-cookie']) {
-      const cookies = response.headers['set-cookie'];
-      const jsessionidCookie = cookies.find(cookie => cookie.includes('JSESSIONID'));
+    // Se conseguimos acessar o histórico, o usuário existe e a senha está correta
+    if (userCheckResponse && userCheckResponse.status === 200) {
+      console.log('Verificação prévia: Usuário e senha válidos');
       
-      if (jsessionidCookie) {
-        console.log('Login bem-sucedido! Cookie de sessão encontrado.');
-        req.session.user = { username };
-        req.session.backendCookies = cookies;
-        return res.redirect('/calculator');
+      // Agora fazemos o login normal
+      const response = await axios.post(`${BACKEND_URL}/api/login`, params, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        withCredentials: true,
+        maxRedirects: 0,
+        validateStatus: function (status) {
+          console.log(`Status da resposta: ${status}`);
+          return true;
+        }
+      });
+      
+      // Verificamos se o login foi bem-sucedido verificando os cookies retornados
+      if (response.headers['set-cookie']) {
+        const cookies = response.headers['set-cookie'];
+        const jsessionidCookie = cookies.find(cookie => cookie.includes('JSESSIONID'));
+        
+        if (jsessionidCookie) {
+          console.log('Login bem-sucedido! Cookie de sessão encontrado.');
+          req.session.user = { username };
+          req.session.backendCookies = cookies;
+          return res.redirect('/calculator');
+        }
       }
+    } else {
+      console.log('Verificação prévia: Usuário ou senha inválidos');
+      return res.render('login', { error: 'Usuário ou senha inválidos' });
     }
     
     // Se chegou aqui, não encontrou o cookie de sessão
