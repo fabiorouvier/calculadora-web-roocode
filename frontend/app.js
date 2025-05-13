@@ -69,7 +69,7 @@ app.post('/login', async (req, res) => {
       },
       withCredentials: true,
       maxRedirects: 0,
-      validateStatus: status => status >= 200 && status < 300
+      validateStatus: status => status >= 200 && status < 400 || status === 302
     });
     
     // If we get here, login was successful
