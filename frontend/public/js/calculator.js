@@ -55,8 +55,8 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(data => {
       // Display result
       resultContainer.style.display = 'block';
-      // Formatar a operação completa com o resultado
-      resultDisplay.textContent = `${data.result}`;
+      // Exibir o resultado formatado
+      resultDisplay.textContent = `${data.formattedResult || data.result}`;
       
       // Limpar os campos de entrada para a próxima operação
       document.getElementById('firstOperand').value = '';
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
           
           const operation = document.createElement('div');
           operation.className = 'history-operation';
-          operation.textContent = `${item.operation} = ${item.result}`;
+          operation.textContent = `${item.operation} = ${item.formattedResult || item.result}`;
           
           const timestamp = document.createElement('div');
           timestamp.className = 'history-timestamp';

@@ -1,6 +1,9 @@
 package com.frouvier.backend.model;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "calculation_history")
@@ -72,6 +76,21 @@ public class CalculationHistory {
     
     public Double getResult() {
         return result;
+    }
+    
+    /**
+     * Retorna o resultado formatado com vírgula como separador decimal e 3 casas decimais
+     * @return Resultado formatado
+     */
+    @Transient
+    public String getFormattedResult() {
+        if (result == null) {
+            return null;
+        }
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("pt", "BR"));
+        symbols.setDecimalSeparator(',');
+        DecimalFormat df = new DecimalFormat("#,##0.000", symbols);
+        return df.format(result);
     }
     
     public void setResult(Double result) {
