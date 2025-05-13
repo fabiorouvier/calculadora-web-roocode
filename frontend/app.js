@@ -57,11 +57,15 @@ app.get('/register', (req, res) => {
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   
+  console.log(`Tentativa de login para usuário: ${username}`);
+  
   try {
     // Create form data for Spring Security form login
     const params = new URLSearchParams();
     params.append('username', username);
     params.append('password', password);
+    
+    console.log('Enviando requisição para o backend...');
     
     const response = await axios.post(`${BACKEND_URL}/api/login`, params, {
       headers: {
@@ -69,8 +73,14 @@ app.post('/login', async (req, res) => {
       },
       withCredentials: true,
       maxRedirects: 0,
-      validateStatus: status => status >= 200 && status < 400 || status === 302
+      validateStatus: function (status) {
+        console.log(`Status da resposta: ${status}`);
+        // Apenas status 2xx são considerados sucesso
+        return status >= 200 && status < 300;
+      }
     });
+    
+    console.log('Login bem-sucedido!');
     
     // If we get here, login was successful
     req.session.user = { username };
@@ -84,6 +94,15 @@ app.post('/login', async (req, res) => {
     res.redirect('/calculator');
   } catch (error) {
     console.error('Login error:', error.message);
+    console.error('Status do erro:', error.response ? error.response.status : 'Sem status');
+    
+    // Se o status for 401 (Unauthorized) ou 403 (Forbidden), é um erro de credenciais
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      console.log('Credenciais inválidas, renderizando página de login com erro');
+      return res.render('login', { error: 'Usuário ou senha inválidos' });
+    }
+    
+    // Para outros erros, também mostrar mensagem de erro
     res.render('login', { error: 'Usuário ou senha inválidos' });
   }
 });
