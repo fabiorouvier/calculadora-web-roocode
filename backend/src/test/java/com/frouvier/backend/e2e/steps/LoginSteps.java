@@ -1,7 +1,11 @@
 package com.frouvier.backend.e2e.steps;
 
+import com.frouvier.backend.e2e.pages.BasePage;
 import com.frouvier.backend.e2e.pages.CalculatorPage;
 import com.frouvier.backend.e2e.pages.LoginPage;
+import com.frouvier.backend.e2e.pages.RegisterPage;
+import org.openqa.selenium.WebDriver;
+import com.frouvier.backend.e2e.config.WebDriverConfig;
 import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.E;
 import io.cucumber.java.pt.Então;
@@ -15,6 +19,25 @@ public class LoginSteps {
 
     private LoginPage loginPage;
     private CalculatorPage calculatorPage;
+    private WebDriver driver;
+    
+    public LoginSteps() {
+        this.driver = WebDriverConfig.getDriver();
+    }
+    
+    /**
+     * Verifica se a URL atual contém o texto especificado
+     * @param text Texto a ser verificado na URL
+     * @return true se a URL contém o texto, false caso contrário
+     */
+    private boolean currentUrlContains(String text) {
+        try {
+            String currentUrl = driver.getCurrentUrl();
+            return currentUrl != null && currentUrl.contains(text);
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     @Dado("que estou na página de login")
     public void queEstouNaPaginaDeLogin() {
@@ -25,12 +48,29 @@ public class LoginSteps {
 
     @Quando("eu preencho o campo {string} com {string}")
     public void euPreenchoOCampoCom(String campo, String valor) {
-        if (campo.equals("username")) {
-            loginPage.enterUsername(valor);
-        } else if (campo.equals("password")) {
-            loginPage.enterPassword(valor);
+        // Verifica se estamos na página de registro
+        if (currentUrlContains("/register")) {
+            RegisterPage registerPage = new RegisterPage();
+            if (campo.equals("username")) {
+                registerPage.enterUsername(valor);
+            } else if (campo.equals("password")) {
+                registerPage.enterPassword(valor);
+            } else {
+                throw new IllegalArgumentException("Campo não reconhecido: " + campo);
+            }
         } else {
-            throw new IllegalArgumentException("Campo não reconhecido: " + campo);
+            // Estamos na página de login
+            if (loginPage == null) {
+                loginPage = new LoginPage();
+            }
+            
+            if (campo.equals("username")) {
+                loginPage.enterUsername(valor);
+            } else if (campo.equals("password")) {
+                loginPage.enterPassword(valor);
+            } else {
+                throw new IllegalArgumentException("Campo não reconhecido: " + campo);
+            }
         }
     }
 
@@ -42,6 +82,10 @@ public class LoginSteps {
             loginPage = calculatorPage.clickLogoutButton();
         } else if (botao.equals("Calcular")) {
             calculatorPage.clickCalculateButton();
+        } else if (botao.equals("Registrar")) {
+            // Acessa a página de registro através da injeção de dependência
+            RegisterPage registerPage = new RegisterPage();
+            registerPage.clickRegisterButton();
         } else {
             throw new IllegalArgumentException("Botão não reconhecido: " + botao);
         }

@@ -23,33 +23,13 @@ public class RegisterSteps {
         Assertions.assertTrue(registerPage.isAtRegisterPage(), "Não está na página de registro");
     }
 
-    @Quando("eu preencho o campo {string} com {string}")
-    public void euPreenchoOCampoCom(String campo, String valor) {
-        if (campo.equals("username")) {
-            registerPage.enterUsername(valor);
-        } else if (campo.equals("password")) {
-            registerPage.enterPassword(valor);
-        } else {
-            throw new IllegalArgumentException("Campo não reconhecido: " + campo);
-        }
-    }
-
-    @E("eu clico no botão {string}")
-    public void euClicoNoBotao(String botao) {
-        if (botao.equals("Registrar")) {
-            registerPage.clickRegisterButton();
-        } else {
-            throw new IllegalArgumentException("Botão não reconhecido: " + botao);
-        }
-    }
+    // Reutilizando os steps de LoginSteps para preencher campos e clicar em botões
 
     @Quando("eu clico no botão {string} sem preencher os campos")
     public void euClicoNoBotaoSemPreencherOsCampos(String botao) {
-        if (botao.equals("Registrar")) {
-            registerPage.clickRegisterButton();
-        } else {
-            throw new IllegalArgumentException("Botão não reconhecido: " + botao);
-        }
+        // Cria uma instância de RegisterPage e clica no botão diretamente
+        RegisterPage registerPage = new RegisterPage();
+        registerPage.clickRegisterButton();
     }
 
     @Então("eu devo permanecer na página de registro")

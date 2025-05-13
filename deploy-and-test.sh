@@ -5,7 +5,7 @@
 # Configurações
 EC2_USER="ubuntu"
 EC2_HOST="100.26.194.86"
-SSH_KEY="chave-frouvier.pem"
+SSH_KEY="$HOME/aws/chave-frouvier.pem"
 REMOTE_DIR="/home/ubuntu/calculadora-web-roocode"
 
 # Verifica se a chave SSH existe
