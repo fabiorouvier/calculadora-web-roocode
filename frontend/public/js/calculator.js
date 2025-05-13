@@ -55,8 +55,12 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(data => {
       // Display result
       resultContainer.style.display = 'block';
-      // Exibir o resultado formatado
-      resultDisplay.textContent = `${data.formattedResult || data.result}`;
+      // Formatar o resultado com vírgula como separador decimal e 3 casas decimais
+      const formattedResult = Number(data.result).toLocaleString('pt-BR', {
+        minimumFractionDigits: 3,
+        maximumFractionDigits: 3
+      });
+      resultDisplay.textContent = formattedResult;
       
       // Limpar os campos de entrada para a próxima operação
       document.getElementById('firstOperand').value = '';
@@ -98,7 +102,12 @@ document.addEventListener('DOMContentLoaded', function() {
           
           const operation = document.createElement('div');
           operation.className = 'history-operation';
-          operation.textContent = `${item.operation} = ${item.formattedResult || item.result}`;
+          // Formatar o resultado com vírgula como separador decimal e 3 casas decimais
+          const formattedResult = Number(item.result).toLocaleString('pt-BR', {
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 3
+          });
+          operation.textContent = `${item.operation} = ${formattedResult}`;
           
           const timestamp = document.createElement('div');
           timestamp.className = 'history-timestamp';
